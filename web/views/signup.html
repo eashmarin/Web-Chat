@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Get Started</title>
+    <link rel="stylesheet" href="../styles/style.css">
+</head>
+<body>
+    <script>
+        function SignUp() {
+            var login = document.getElementById("login").value;
+            var password = document.getElementById("password").value;
+            var rePassword = document.getElementById("re-password").value;
+
+            var req = new XMLHttpRequest();
+
+            req.open("POST", "signup", true);
+
+            req.onreadystatechange = function () {
+                if (req.readyState == 4 && req.status == 200) {
+                    if (req.responseText == '0')
+                        window.location.href = "/add";
+                    else {
+                        console.log(req.responseText);
+                    }
+                }
+            }
+
+            req.setRequestHeader("Content-Type", "application/json")
+
+            req.send(JSON.stringify({"login": login, "password": password, "rePassword": rePassword}));
+        }
+    </script>
+    <div class="outer-block">
+        <div class="signup-block">
+            <img src="images/user.png" width="64px" height="64px">
+            <label>
+                <input type="text" placeholder="Login" id="login" class="auth-field"><br \>
+            </label>
+
+            <label>
+                <input type="password" placeholder="Password" id="password" class="auth-field"><br \>
+            </label>
+
+            <label>
+                <input type="password" placeholder="Repeat Password" id="re-password" class="auth-field"><br \>
+            </label>
+
+            <button class="auth-button" onclick="SignUp()">SignUp</button>
+        </div>
+    </div>
+</body>
+</html>

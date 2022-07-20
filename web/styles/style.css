@@ -1,0 +1,193 @@
+.input {
+    background-color: rgb(230, 231, 231);
+    display: block;
+    margin: auto;
+    width: 300px;
+    height: 175px;
+
+    border: 1px solid black;
+}
+
+body {
+    font: 16px "Fira Sans", sans-serif;
+    background-color: #9fb8d6;
+}
+
+.outer-block {
+    display: flex;
+    justify-content: center;
+}
+
+.auth-block {
+    display: inline-block;
+    margin: auto;
+    width: 225px;
+    height: 215px;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid black;
+    border-radius: 10%;
+    background-color: #e5f6ff;
+}
+
+.signup-block {
+    display: inline-block;
+    width: 225px;
+    height: 260px;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid black;
+    border-radius: 10%;
+    background-color: #e5f6ff;
+}
+
+.auth-field {
+    width: 200px;
+    height: 30px;
+    margin-top: 10px;
+    text-align: left;
+}
+.auth-button {
+    width: 40%;
+    height: 40px;
+    margin-top: 10px;
+}
+
+.wrapper {
+    display: flex;
+    height: 100%;
+    align-items: flex-start;
+}
+
+.users-list-container {
+    display: flex;
+    flex-basis: 10%;
+}
+
+.users-list {
+    display: flex;
+    flex-direction: column;
+    align-content: space-between;
+    flex-basis: 100%;
+    height: 20%;
+    border: 2px solid gray;
+    border-radius: 10px;
+    text-align: left;
+    background: lightgreen;
+}
+
+.user-list-record {
+
+}
+
+.chat-tools-container {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-basis: 60%;
+    height: 100%;
+}
+
+.chat-block {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 100%;
+    overflow-y: auto;
+    scrollbar-color: lightblue white;
+    scrollbar-width: thin;
+    background-color: aliceblue;
+    border-radius: 10px;
+    border: 2px groove black;
+    font-weight: lighter;
+}
+
+.msg-input-block {
+    display: flex;
+    flex-direction: row;
+    text-align: left;
+    flex-basis: 15%;
+    margin-top: 10px;
+}
+
+.msg-input {
+    flex-basis: 40%;
+    height: 100%;
+    border-radius: 10px;
+    text-align: start;
+    border: 2px groove black;
+}
+
+.msg-button {
+    flex-basis: 10%;
+    height: 50%;
+    margin: 0px 5px 50px;
+    vertical-align: middle;
+}
+
+.msg-wrapper {
+    display: flex;
+    margin-top: 15px;
+    margin-bottom: auto;
+    flex-direction: column;
+    /*! flex-basis: 80%; */
+    width: 70%;
+}
+
+.msg-text {
+    display: flex;
+    flex-direction: row;
+    text-align: left;
+    width: 98%;
+    margin: auto;
+    border-radius: 5px;
+    border: 1px solid black;
+    background-color: lightcyan;
+}
+
+.msg-block {
+    display: flex;
+    width: 50%;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: flex-start;
+}
+
+.msg-info-bar {
+    display: flex;
+    flex-direction: row;
+    width: 98%;
+    margin: auto;
+    font: 12px "Fira Sans", sans-serif;
+    color: gray;
+}
+
+.other-msg-block {
+    display: flex;
+    width: 50%;
+    flex-direction: column;
+    align-items: flex-end;
+    align-self: end;
+}
+
+.other-msg-text {
+    display: flex;
+    flex-direction: row;
+    width: 98%;
+    margin: auto;
+    border-radius: 5px;
+    border: 1px solid black;
+    background-color: bisque;
+}
+
+.msg-author {
+    justify-self: start;
+    margin-right: auto;
+}
+
+.msg-date {
+    justify-self: end;
+    margin-left: auto;
+}
