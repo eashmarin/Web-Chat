@@ -10,38 +10,9 @@
     <head>
         <title>Add</title>
         <link rel="stylesheet" href="../styles/style.css">
+        <script type="text/javascript" src="../scripts/script.js"></script>
     </head>
     <body>
-        <script>
-            function signUp() {
-                window.location.href = '/signup';
-            }
-
-            function authorize() {
-                let login = document.getElementById("login").value;
-                let password = document.getElementById("password").value;
-
-                let params = JSON.stringify({ "login": login, "password": password});
-
-                let req = new XMLHttpRequest();
-
-                req.open('POST', 'add', true);
-
-                req.onreadystatechange = function () {
-                    if (req.readyState == 4 && req.status == 200) {
-                        if (req.responseText == "0") {
-                            window.location.href = "/chat";     //TODO: replace with POST request
-                        }
-                        else
-                            console.log(req.responseText);
-                    }
-                }
-
-                req.setRequestHeader('Content-Type', 'application/json');
-
-                req.send(params);
-            }
-        </script>
         <div class="outer-block">
             <div class="auth-block">
                 <img src="images/user.png" width="64px" height="64px">
