@@ -6,6 +6,7 @@ import app.model.Model;
 
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.apache.logging.log4j.LogManager;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +22,8 @@ public class ChatServlet extends HttpServlet {
 
         Model model = Model.getInstance();
 
+        String author = (String) req.getSession().getAttribute("login");
+
         Template temp = model.getConfiguration().getTemplate("/chat.ftl");
 
         Map<String, Object> root = new HashMap<>();
@@ -28,11 +31,9 @@ public class ChatServlet extends HttpServlet {
         try {
             root.put("msgs", model.getRecentMessages());
 
-            String author = (String) req.getSession().getAttribute("login");
-
             model.getUsers().get(author).setLastSeenMsg(model.lastMessage());
         } catch (NoMessagesException e) {
-            e.printStackTrace();
+            LogManager.getRootLogger().info("no messages had been before user \'" + author + "\' enter the chat");
         }
 
         Writer out = resp.getWriter();
@@ -96,7 +97,9 @@ public class ChatServlet extends HttpServlet {
 
                 model.getUsers().get(author).setLastSeenMsg(model.lastMessage());
             }
-        } catch (NoMessagesException | TemplateException e) {
+        } catch (NoMessagesException e) {
+            //LogManager.getRootLogger().info("no messages to update for user \'" + author + "\'");
+        } catch (TemplateException e) {
             e.printStackTrace();
         }
     }

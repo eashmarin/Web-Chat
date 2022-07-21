@@ -5,14 +5,12 @@ import app.entities.Message;
 import app.entities.User;
 import app.exceptions.NoMessagesException;
 import app.exceptions.UserExistsException;
-import app.exceptions.WrongDataException;
+import app.exceptions.IncorrectDataException;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
 import org.apache.logging.log4j.LogManager;
 
-import javax.servlet.ServletContext;
 import java.io.*;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -84,9 +82,8 @@ public class Model {
             writer.append(user.getName() + "," + user.getPassword());
 
             writer.close();
-
         } catch (IOException e) {
-            e.printStackTrace();
+            LogManager.getRootLogger().error("error while writing user data to file", e);
         }
     }
 
@@ -95,17 +92,17 @@ public class Model {
                 .anyMatch(u -> u.getName().equals(user.getName())));
 
         if (!contains) {
-            LogManager.getRootLogger().debug("adding user to online group");
             usersOnline.add(user);
+
+            LogManager.getRootLogger().info("user \'" + user + "\' became online");
         }
     }
 
-    public void logIn(User user) throws WrongDataException {
-
+    public void logIn(User user) throws IncorrectDataException {
         if (getUsers().containsKey(user.getName()) && isUserValid(user))
             makeOnline(user);
         else
-            throw new WrongDataException(user.getName());
+            throw new IncorrectDataException(user.getName());
     }
 
 
@@ -130,8 +127,6 @@ public class Model {
 
         int fromIndex = getMessages().indexOf(message) + 1;
         int toIndex = getMessages().size();
-
-        LogManager.getRootLogger().debug("message - " + message + ": fromIndex = " + fromIndex + "; toIndex = " + toIndex);
 
         return getMessages().subList(fromIndex, toIndex);
     }
@@ -164,5 +159,7 @@ public class Model {
                 .get();
 
         usersOnline.remove(user);
+
+        LogManager.getRootLogger().info("user \'" + username + "\' became offline");
     }
 }

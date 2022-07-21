@@ -1,7 +1,6 @@
 package app.entities;
 
 import app.exceptions.NoMessagesException;
-import app.model.Model;
 
 public class User {
     private String name;

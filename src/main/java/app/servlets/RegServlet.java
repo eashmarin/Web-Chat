@@ -4,6 +4,8 @@ import app.JSONParser;
 import app.entities.User;
 import app.exceptions.UserExistsException;
 import app.model.Model;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -22,6 +24,8 @@ public class RegServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Logger logger = LogManager.getRootLogger();
+
         String input = req.getReader().readLine();
         String login = JSONParser.getParameter(input, "login");
         String pass = JSONParser.getParameter(input, "password");
@@ -33,13 +37,20 @@ public class RegServlet extends HttpServlet {
             if (pass.equals(rePass)) {
                 model.addUser(new User(login, pass));
 
+                logger.info("user \'" + login + "\' is saved to file");
+
                 resp.getWriter().print("0");
             }
-            else
-                resp.getWriter().println("passwords aren't matched");
+            else {
+                logger.warn("failed to sign up as \'" + login + "\': passwords aren't matched");
+
+                resp.getWriter().print("passwords aren't matched");
+            }
 
         } catch (UserExistsException e) {
-            resp.getWriter().println("user \"" + login + "\" already exists");
+            logger.warn("failed to sign up as \'" + login + "\': user already exists");
+
+            resp.getWriter().print("user \"" + login + "\" already exists");
         }
     }
 }

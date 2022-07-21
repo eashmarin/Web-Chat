@@ -2,7 +2,7 @@ package app.servlets;
 
 import app.JSONParser;
 import app.entities.User;
-import app.exceptions.WrongDataException;
+import app.exceptions.IncorrectDataException;
 import app.model.Model;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,8 +25,6 @@ public class AddServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Logger logger = LogManager.getRootLogger();
 
-        logger.debug("doPost() is started");
-
         String input = req.getReader().readLine();
         String login = JSONParser.getParameter(input, "login");
         String pass = JSONParser.getParameter(input, "password");
@@ -38,11 +36,15 @@ public class AddServlet extends HttpServlet {
         try {
             model.logIn(user);
 
+            logger.info("user \'" + user + "\' logged in");
+
             req.getSession().setAttribute("login", login);
 
             resp.getWriter().print("0");
 
-        } catch (WrongDataException e) {
+        } catch (IncorrectDataException e) {
+            logger.warn("failed to log in account \'" + user + "\': data is incorrect");
+
             resp.getWriter().print("user data for user " + user + " isn't correct :(");
         }
     }

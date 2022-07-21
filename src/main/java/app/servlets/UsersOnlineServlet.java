@@ -17,17 +17,11 @@ import java.util.Map;
 public class UsersOnlineServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        Logger logger = LogManager.getRootLogger();
-
-        logger.trace("doGet() is started");
-
         Model model = Model.getInstance();
 
         Template template = model.getConfiguration().getTemplate("users_online.ftl");
 
         Map<String, Object> root = new HashMap<>();
-
-        System.out.println("model.getUsersOnline() = " + model.getUsersOnline());
 
         root.put("users_online", model.getUsersOnline());
 
