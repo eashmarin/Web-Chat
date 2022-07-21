@@ -10,7 +10,9 @@ import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
 import org.apache.logging.log4j.LogManager;
 
+import javax.servlet.ServletContext;
 import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +37,7 @@ public class Model {
 
         cfg = new Configuration(Configuration.VERSION_2_3_31);
         try {
-            cfg.setDirectoryForTemplateLoading(new File("C:/Users/Evgeny/IdeaProjects/ChatApp/web/views"));
+            cfg.setDirectoryForTemplateLoading(new File(getClass().getResource("/templates").getPath()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -48,7 +50,7 @@ public class Model {
         BufferedReader reader;
 
         try {
-            reader = new BufferedReader(new FileReader ("C:/Users/Evgeny/IdeaProjects/ChatApp/src/main/resources/users.csv"));
+            reader = new BufferedReader(new FileReader(getClass().getResource("/users.csv").getPath()));
 
             String line;
 
@@ -63,8 +65,6 @@ public class Model {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     public Configuration getConfiguration() {
@@ -79,7 +79,7 @@ public class Model {
         users.put(user.getName(), user);
 
         try {
-            FileWriter writer = new FileWriter("C:/Users/Evgeny/IdeaProjects/ChatApp/src/main/resources/users.csv", true);
+            FileWriter writer = new FileWriter(getClass().getResource("/users.csv").getPath(), true);
             writer.append('\n');
             writer.append(user.getName() + "," + user.getPassword());
 
@@ -101,6 +101,7 @@ public class Model {
     }
 
     public void logIn(User user) throws WrongDataException {
+
         if (getUsers().containsKey(user.getName()) && isUserValid(user))
             makeOnline(user);
         else

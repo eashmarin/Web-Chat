@@ -2,8 +2,8 @@
     <head>
         <title>Chat</title>
         <meta charset="utf-8">
-        <link rel="stylesheet" href="../styles/style.css">
-        <script type="text/javascript" src="../scripts/script.js"></script>
+        <link rel="stylesheet" href="styles/style.css">
+        <script type="text/javascript" src="scripts/script.js"></script>
     </head>
     <body>
         <script>
