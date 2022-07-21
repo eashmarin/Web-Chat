@@ -58,6 +58,8 @@ public class Model {
                 users.put(pair[0], new User(pair[0], pair[1]));
             }
 
+            reader.close();
+
             LogManager.getRootLogger().debug("users: " + users.keySet());
 
         } catch (IOException e) {
@@ -78,8 +80,9 @@ public class Model {
 
         try {
             FileWriter writer = new FileWriter(getClass().getResource("/users.csv").getPath(), true);
+
             writer.append('\n');
-            writer.append(user.getName() + "," + user.getPassword());
+            writer.append(user.getName() + "," + user.getPass());
 
             writer.close();
         } catch (IOException e) {
@@ -111,7 +114,7 @@ public class Model {
     }
 
     public boolean isUserValid(User user) {
-        return (users.get(user.getName()).getPassword().equals(user.getPassword()));
+        return users.get(user.getName()).getPass() == user.getPass();
     }
 
     public Map<String, User> getUsers() {
