@@ -51,7 +51,7 @@ public class RegServlet extends HttpServlet {
             else {
                 resp.setStatus(401);
 
-                String error_msg = "passwords aren't matched";
+                String error_msg = "passwords do not match";
 
                 logger.warn("failed to sign up as \'" + login + "\': " + error_msg);
 
