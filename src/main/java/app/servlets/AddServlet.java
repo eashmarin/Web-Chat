@@ -4,6 +4,8 @@ import app.JSONParser;
 import app.entities.User;
 import app.exceptions.IncorrectDataException;
 import app.model.Model;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class AddServlet extends HttpServlet {
     @Override
@@ -40,12 +43,25 @@ public class AddServlet extends HttpServlet {
 
             req.getSession().setAttribute("login", login);
 
-            resp.getWriter().print("0");
-
         } catch (IncorrectDataException e) {
-            logger.warn("failed to log in account \'" + user + "\': data is incorrect");
 
-            resp.getWriter().print("user data for user " + user + " isn't correct :(");
+            resp.setStatus(401);
+
+            HashMap<String, Object> root = new HashMap<>();
+
+            Template tmp = model.getConfiguration().getTemplate("error_input.ftl");
+
+            String error_msg = "data is invalid";
+
+            root.put("error_msg", error_msg);
+
+            try {
+                tmp.process(root, resp.getWriter());
+            } catch (TemplateException ex) {
+                ex.printStackTrace();
+            }
+
+            logger.warn("failed to log in account \'" + user + "\': " + error_msg);
         }
     }
 }

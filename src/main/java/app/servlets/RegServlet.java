@@ -4,6 +4,8 @@ import app.JSONParser;
 import app.entities.User;
 import app.exceptions.UserExistsException;
 import app.model.Model;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class RegServlet extends HttpServlet {
 
@@ -33,6 +36,10 @@ public class RegServlet extends HttpServlet {
 
         Model model = Model.getInstance();
 
+        HashMap<String, Object> root = new HashMap<>();
+
+        Template tmp = model.getConfiguration().getTemplate("error_input.ftl");
+
         try {
             if (pass.equals(rePass)) {
                 model.addUser(new User(login, pass));
@@ -42,15 +49,35 @@ public class RegServlet extends HttpServlet {
                 resp.getWriter().print("0");
             }
             else {
-                logger.warn("failed to sign up as \'" + login + "\': passwords aren't matched");
+                resp.setStatus(401);
 
-                resp.getWriter().print("passwords aren't matched");
+                String error_msg = "passwords aren't matched";
+
+                logger.warn("failed to sign up as \'" + login + "\': " + error_msg);
+
+                root.put("error_msg", error_msg);
+
+                tmp.process(root, resp.getWriter());
             }
 
         } catch (UserExistsException e) {
-            logger.warn("failed to sign up as \'" + login + "\': user already exists");
 
-            resp.getWriter().print("user \"" + login + "\" already exists");
+            resp.setStatus(401);
+
+            String error_msg = "user \"" + login + "\" already exists";
+
+            logger.warn("failed to sign up: " + error_msg);
+
+            root.put("error_msg", error_msg);
+
+            try {
+                tmp.process(root, resp.getWriter());
+            } catch (TemplateException ex) {
+                ex.printStackTrace();
+            }
+
+        } catch (TemplateException e) {
+            e.printStackTrace();
         }
     }
 }

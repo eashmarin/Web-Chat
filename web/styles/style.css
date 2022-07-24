@@ -4,7 +4,6 @@
     margin: auto;
     width: 300px;
     height: 175px;
-
     border: 1px solid black;
 }
 
@@ -16,10 +15,12 @@ body {
 .outer-block {
     display: flex;
     justify-content: center;
+    height: 260px;
 }
 
 .auth-block {
     display: inline-block;
+    position: absolute;
     margin: auto;
     width: 225px;
     height: 215px;
@@ -33,12 +34,25 @@ body {
 .signup-block {
     display: inline-block;
     width: 225px;
-    height: 260px;
+    height: 34%;
     text-align: center;
-    vertical-align: middle;
     border: 1px solid black;
     border-radius: 10%;
     background-color: #e5f6ff;
+    position: absolute;
+}
+
+.invalid-input-hint {
+    background-color: lightcoral;
+    border: 2px solid red;
+    border-radius: 5%;
+    left: 245px;
+    position: relative;
+    align-self: center;
+    width: 13%;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .auth-field {
@@ -132,7 +146,6 @@ body {
     margin-top: 15px;
     margin-bottom: auto;
     flex-direction: column;
-    /*! flex-basis: 80%; */
     width: 70%;
 }
 
