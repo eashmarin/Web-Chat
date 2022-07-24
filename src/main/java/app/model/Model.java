@@ -3,10 +3,7 @@ package app.model;
 
 import app.entities.Message;
 import app.entities.User;
-import app.exceptions.NoMessagesException;
-import app.exceptions.PasswordsDoNotMatchException;
-import app.exceptions.UserExistsException;
-import app.exceptions.InvalidInputDataException;
+import app.exceptions.*;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
 import org.apache.logging.log4j.LogManager;
@@ -72,7 +69,13 @@ public class Model {
         return cfg;
     }
 
-    public void addNewUser(String login, String password, String rePassword) throws UserExistsException, PasswordsDoNotMatchException {
+    public void addNewUser(String login, String password, String rePassword) throws UserExistsException, PasswordsDoNotMatchException, SmallPasswordException, ShortLoginException {
+        if (login.length() < 3)
+            throw new ShortLoginException(Integer.toString(login.length()));
+
+        if (password.length() < 8)
+            throw new SmallPasswordException(Integer.toString(password.length()));
+
         if (!password.equals(rePassword))
             throw new PasswordsDoNotMatchException("");
 

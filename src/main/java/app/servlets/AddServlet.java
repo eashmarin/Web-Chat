@@ -61,7 +61,7 @@ public class AddServlet extends HttpServlet {
                 ex.printStackTrace();
             }
 
-            logger.warn("failed to log in account \'" + user + "\': " + error_msg);
+            logger.warn("failed to log in as \'" + user + "\': " + error_msg);
         }
     }
 }

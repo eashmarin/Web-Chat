@@ -1,10 +1,7 @@
 package app.servlets;
 
 import app.JSONParser;
-import app.entities.User;
-import app.exceptions.InvalidInputDataException;
-import app.exceptions.PasswordsDoNotMatchException;
-import app.exceptions.UserExistsException;
+import app.exceptions.*;
 import app.model.Model;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -60,6 +57,12 @@ public class RegServlet extends HttpServlet {
 
             if (e instanceof UserExistsException)
                 error_msg = "user already exists";
+
+            if (e instanceof ShortLoginException)
+                error_msg = "login must consist at least 3 symbols";
+
+            if (e instanceof SmallPasswordException)
+                error_msg = "password must consist at least 8 symbols";
 
             root.put("error_msg", error_msg);
 

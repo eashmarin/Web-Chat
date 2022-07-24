@@ -138,7 +138,7 @@ function SignUp() {
             if (req.status == 401) {
                 document.getElementById("outer-block").insertAdjacentHTML("beforeend", req.responseText);
 
-                if (passElement.value != repassElement.value) {
+                if (passElement.value != repassElement.value || passElement.value.length < 8) {
                     passElement.setAttribute("style", "border: 2px solid lightcoral");
                     repassElement.setAttribute("style", "border: 2px solid lightcoral");
                 }
