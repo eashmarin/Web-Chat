@@ -2,7 +2,7 @@ package app.servlets;
 
 import app.JSONParser;
 import app.entities.User;
-import app.exceptions.IncorrectDataException;
+import app.exceptions.InvalidInputDataException;
 import app.model.Model;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -43,7 +43,7 @@ public class AddServlet extends HttpServlet {
 
             req.getSession().setAttribute("login", login);
 
-        } catch (IncorrectDataException e) {
+        } catch (InvalidInputDataException e) {
 
             resp.setStatus(401);
 

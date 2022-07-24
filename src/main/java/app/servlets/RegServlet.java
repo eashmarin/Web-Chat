@@ -2,6 +2,8 @@ package app.servlets;
 
 import app.JSONParser;
 import app.entities.User;
+import app.exceptions.InvalidInputDataException;
+import app.exceptions.PasswordsDoNotMatchException;
 import app.exceptions.UserExistsException;
 import app.model.Model;
 import freemarker.template.Template;
@@ -36,37 +38,28 @@ public class RegServlet extends HttpServlet {
 
         Model model = Model.getInstance();
 
-        HashMap<String, Object> root = new HashMap<>();
-
-        Template tmp = model.getConfiguration().getTemplate("error_input.ftl");
-
         try {
-            if (pass.equals(rePass)) {
-                model.addUser(new User(login, pass));
+            model.addNewUser(login, pass, rePass);
 
-                logger.info("user \'" + login + "\' is saved to file");
+            logger.info("user \'" + login + "\' is saved to file");
 
-                resp.getWriter().print("0");
-            }
-            else {
-                resp.setStatus(401);
+            resp.getWriter().print("0");
 
-                String error_msg = "passwords do not match";
-
-                logger.warn("failed to sign up as \'" + login + "\': " + error_msg);
-
-                root.put("error_msg", error_msg);
-
-                tmp.process(root, resp.getWriter());
-            }
-
-        } catch (UserExistsException e) {
+        } catch (InvalidInputDataException e) {
 
             resp.setStatus(401);
 
-            String error_msg = "user \"" + login + "\" already exists";
+            HashMap<String, Object> root = new HashMap<>();
 
-            logger.warn("failed to sign up: " + error_msg);
+            Template tmp = model.getConfiguration().getTemplate("error_input.ftl");
+
+            String error_msg = e.getLocalizedMessage();
+
+            if (e instanceof PasswordsDoNotMatchException)
+                error_msg = "passwords do not match";
+
+            if (e instanceof UserExistsException)
+                error_msg = "user already exists";
 
             root.put("error_msg", error_msg);
 
@@ -76,8 +69,7 @@ public class RegServlet extends HttpServlet {
                 ex.printStackTrace();
             }
 
-        } catch (TemplateException e) {
-            e.printStackTrace();
+            logger.warn("failed to sign up as \"" + login + "\": " + error_msg);
         }
     }
 }

@@ -4,8 +4,9 @@ package app.model;
 import app.entities.Message;
 import app.entities.User;
 import app.exceptions.NoMessagesException;
+import app.exceptions.PasswordsDoNotMatchException;
 import app.exceptions.UserExistsException;
-import app.exceptions.IncorrectDataException;
+import app.exceptions.InvalidInputDataException;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
 import org.apache.logging.log4j.LogManager;
@@ -71,18 +72,20 @@ public class Model {
         return cfg;
     }
 
-    public void addUser(User user) throws UserExistsException {
+    public void addNewUser(String login, String password, String rePassword) throws UserExistsException, PasswordsDoNotMatchException {
+        if (!password.equals(rePassword))
+            throw new PasswordsDoNotMatchException("");
 
-        if (users.containsKey(user.getName()))
-            throw new UserExistsException(user.getName());
+        if (users.containsKey(login))
+            throw new UserExistsException(login);
 
-        users.put(user.getName(), user);
+        users.put(login, new User(login, password));
 
         try {
             FileWriter writer = new FileWriter(getClass().getResource("/users.csv").getPath(), true);
 
             writer.append('\n');
-            writer.append(user.getName() + "," + user.getPass());
+            writer.append(login + "," + password);
 
             writer.close();
         } catch (IOException e) {
@@ -101,11 +104,11 @@ public class Model {
         }
     }
 
-    public void logIn(User user) throws IncorrectDataException {
+    public void logIn(User user) throws InvalidInputDataException {
         if (getUsers().containsKey(user.getName()) && isUserValid(user))
             makeOnline(user);
         else
-            throw new IncorrectDataException(user.getName());
+            throw new InvalidInputDataException(user.getName());
     }
 
 
