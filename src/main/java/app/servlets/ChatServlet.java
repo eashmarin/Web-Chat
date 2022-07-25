@@ -56,6 +56,12 @@ public class ChatServlet extends HttpServlet {
 
         String author = (String) req.getSession().getAttribute("login");
         String msgText = req.getReader().readLine();
+
+        if (msgText == null || !msgText.matches(".*[a-zA-Z0-9!@#$%^&*(){}_=\\-+?/:\\[\\]\\'\"].*")) {
+            resp.setStatus(204);
+            return;
+        }
+
         Message message = new Message(author, msgText);
 
         Map<String, Object> root = new HashMap<>();

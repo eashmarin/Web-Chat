@@ -46,29 +46,21 @@ function updatePage() {
 
 function send() {
     let req = new XMLHttpRequest();
-    var msg = document.getElementById('msg-input').value;
-    //console.log("5");
+    let msg = document.getElementById('msg-input').value;
 
     req.open('POST', 'chat', true);
 
     req.onreadystatechange = function () {
         if (req.readyState == 4) {
             if (req.status == 200) {
-                //console.log(req.responseXML.getElementById("msg-1").innerHTML);
-                //console.log(req.responseText.g);
                 document.getElementById("chat-block").insertAdjacentHTML("beforeend", req.responseText);
                 document.getElementById("msg-input").value = "";
-            }
-            else {
-                // Возникла ошибка HTTP
-                alert("HTTP error: " + req.status);
             }
         }
     }
 
-    req.setRequestHeader('Content-type','application/xml');
+    req.setRequestHeader('Content-type','multipart/form-data');
 
-    console.log(msg);
     req.send(msg);
 }
 
