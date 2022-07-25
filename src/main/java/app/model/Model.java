@@ -145,10 +145,12 @@ public class Model {
         if (messages.isEmpty())
             throw new NoMessagesException("");
 
-        if (messages.size() < 5)
+        int size = messages.size();
+
+        if (size < 5)
             return messages;
         else
-            return messages.subList(0, 4);
+            return messages.subList(size - 5, size);
     }
 
     public Message lastMessage() throws NoMessagesException {
