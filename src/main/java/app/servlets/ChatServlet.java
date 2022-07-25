@@ -24,6 +24,11 @@ public class ChatServlet extends HttpServlet {
 
         String author = (String) req.getSession().getAttribute("login");
 
+        if (author == null) {
+            resp.setStatus(403);
+            return;
+        }
+
         Template temp = model.getConfiguration().getTemplate("/chat.ftl");
 
         Map<String, Object> root = new HashMap<>();
