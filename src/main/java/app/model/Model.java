@@ -1,17 +1,13 @@
 package app.model;
 
-
 import app.entities.Message;
 import app.entities.User;
 import app.exceptions.*;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
 import org.apache.logging.log4j.LogManager;
-
 import java.io.*;
-import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,22 +19,13 @@ public class Model {
     private final List<Message> messages;
     private final List<User> usersOnline;
 
-    private final String dbUrl = "jdbc:postgresql://ec2-34-247-72-29.eu-west-1.compute.amazonaws.com:5432/de2cf9805u5mit";
-    private final String dbUser = "ompdbabhwsjxcb";
-    private final String dbPassword = "cd22373249502279cdb8caa501247cec6880c52c598aca7d09a3be0f754a3e71";
-
-    private static Connection con;
-    private static PreparedStatement createStatement;
-    private static PreparedStatement insertStatement;
-    private static PreparedStatement selectStatement;
-    private static ResultSet rs;
+    private DataBase db = DataBase.getInstance();
 
     public static Model getInstance() {
         return instance;
     }
 
     private Model() {
-        users = new HashMap<>();
         messages = new ArrayList<>();
         usersOnline = new ArrayList<>();
 
@@ -54,34 +41,9 @@ public class Model {
         cfg.setWrapUncheckedExceptions(true);
         cfg.setFallbackOnNullLoopVariable(false);
 
-        try {
-            Class.forName("org.postgresql.Driver");
+        users = db.getUsers();
 
-            con = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-
-            selectStatement = con.prepareStatement("SELECT login, password FROM USERS");
-
-            rs = selectStatement.executeQuery();
-
-            while (rs.next()) {
-                String login = rs.getString("login");
-                Integer encodedPass = rs.getInt("password");
-
-                users.put(login, new User(login, encodedPass));
-            }
-
-            LogManager.getRootLogger().debug("users: " + users.keySet());
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                con.close();
-                selectStatement.close();
-                rs.close();
-            } catch (SQLException e) {
-
-            }
-        }
+        LogManager.getRootLogger().debug("users: " + users.keySet());
     }
 
     public Configuration getConfiguration() {
@@ -101,41 +63,11 @@ public class Model {
         if (users.containsKey(login))
             throw new UserExistsException(login);
 
-        users.put(login, new User(login, password));
+        User user = new User(login, password);
 
-        try {
-            Class.forName("org.postgresql.Driver");
+        users.put(login, user);
 
-            con = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-
-            createStatement = con.prepareStatement(
-                    "CREATE TABLE IF NOT EXISTS users (" +
-                    "id serial PRIMARY KEY, " +
-                    "login VARCHAR (50) UNIQUE NOT NULL, " +
-                    "password INT NOT NULL " +
-                    ");"
-            );
-
-            insertStatement = con.prepareStatement(
-                    "INSERT into users (id, login, password) " +
-                            "VALUES (DEFAULT, ?, ?);"
-            );
-            insertStatement.setString(1, users.get(login).getName());
-            insertStatement.setInt(2, users.get(login).getEncodedPass());
-
-            createStatement.executeUpdate();
-            insertStatement.executeUpdate();
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                con.close();
-                createStatement.close();
-                insertStatement.close();
-            } catch (SQLException e) {
-
-            }
-        }
+        db.saveUser(user);
     }
 
     public void makeOnline(User user) {
