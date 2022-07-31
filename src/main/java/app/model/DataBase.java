@@ -1,17 +1,21 @@
 package app.model;
 
 import app.entities.User;
+import org.apache.logging.log4j.LogManager;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 public class DataBase {
     private static DataBase instance = new DataBase();
 
-    private static final String dbUrl = "jdbc:postgresql://ec2-34-247-72-29.eu-west-1.compute.amazonaws.com:5432/de2cf9805u5mit";
-    private static final String dbUser = "ompdbabhwsjxcb";
-    private static final String dbPassword = "cd22373249502279cdb8caa501247cec6880c52c598aca7d09a3be0f754a3e71";
+    private static String dbUrl;
+    private static String dbUser;
+    private static String dbPassword;
 
     private static Connection con;
     private static PreparedStatement createStatement;
@@ -20,6 +24,18 @@ public class DataBase {
     private static ResultSet rs;
 
     private DataBase() {
+        Properties properties = new Properties();
+        try {
+            properties.load(new FileReader(getClass().getResource("/credentials.properties").getPath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        dbUrl = properties.getProperty("url");
+        dbUser = properties.getProperty("user");
+        dbPassword = properties.getProperty("password");
+
+        LogManager.getRootLogger().info("db credentials: " + dbUrl + "; " + dbUser + "; " + dbPassword);
     }
 
     public static DataBase getInstance() {
