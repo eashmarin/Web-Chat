@@ -58,8 +58,17 @@ public class DataBase {
         try {
             connect();
 
+            createStatement = con.prepareStatement(
+                    "CREATE TABLE IF NOT EXISTS users (" +
+                            "id serial PRIMARY KEY, " +
+                            "login VARCHAR (50) UNIQUE NOT NULL, " +
+                            "password INT NOT NULL " +
+                            ");"
+            );
+
             selectStatement = con.prepareStatement("SELECT login, password FROM USERS");
 
+            createStatement.executeUpdate();
             rs = selectStatement.executeQuery();
 
             while (rs.next()) {
@@ -75,6 +84,7 @@ public class DataBase {
         } finally {
             try {
                 selectStatement.close();
+                createStatement.close();
                 rs.close();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -88,14 +98,6 @@ public class DataBase {
         try {
             connect();
 
-            createStatement = con.prepareStatement(
-                    "CREATE TABLE IF NOT EXISTS users (" +
-                            "id serial PRIMARY KEY, " +
-                            "login VARCHAR (50) UNIQUE NOT NULL, " +
-                            "password INT NOT NULL " +
-                            ");"
-            );
-
             insertStatement = con.prepareStatement(
                     "INSERT into users (id, login, password) " +
                             "VALUES (DEFAULT, ?, ?);"
@@ -103,7 +105,6 @@ public class DataBase {
             insertStatement.setString(1, user.getName());
             insertStatement.setInt(2, user.getEncodedPass());
 
-            createStatement.executeUpdate();
             insertStatement.executeUpdate();
 
             close();
@@ -112,7 +113,6 @@ public class DataBase {
         } finally {
             try {
                 insertStatement.close();
-                createStatement.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
