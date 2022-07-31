@@ -9,6 +9,7 @@ import freemarker.template.TemplateExceptionHandler;
 import org.apache.logging.log4j.LogManager;
 
 import java.io.*;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,16 @@ public class Model {
     private final Map<String, User> users;
     private final List<Message> messages;
     private final List<User> usersOnline;
+
+    private final String dbUrl = "jdbc:postgresql://ec2-34-247-72-29.eu-west-1.compute.amazonaws.com:5432/de2cf9805u5mit";
+    private final String dbUser = "ompdbabhwsjxcb";
+    private final String dbPassword = "cd22373249502279cdb8caa501247cec6880c52c598aca7d09a3be0f754a3e71";
+
+    private static Connection con;
+    private static PreparedStatement createStatement;
+    private static PreparedStatement insertStatement;
+    private static PreparedStatement selectStatement;
+    private static ResultSet rs;
 
     public static Model getInstance() {
         return instance;
@@ -43,25 +54,33 @@ public class Model {
         cfg.setWrapUncheckedExceptions(true);
         cfg.setFallbackOnNullLoopVariable(false);
 
-        BufferedReader reader;
-
         try {
-            reader = new BufferedReader(new FileReader(getClass().getResource("/users.csv").getPath()));
+            Class.forName("org.postgresql.Driver");
 
-            String line;
+            con = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
 
-            while ((line = reader.readLine()) != null) {
-                String[] pair = line.split(",");
+            selectStatement = con.prepareStatement("SELECT login, password FROM USERS");
 
-                users.put(pair[0], new User(pair[0], pair[1]));
+            rs = selectStatement.executeQuery();
+
+            while (rs.next()) {
+                String login = rs.getString("login");
+                Integer encodedPass = rs.getInt("password");
+
+                users.put(login, new User(login, encodedPass));
             }
 
-            reader.close();
-
             LogManager.getRootLogger().debug("users: " + users.keySet());
-
-        } catch (IOException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+                selectStatement.close();
+                rs.close();
+            } catch (SQLException e) {
+
+            }
         }
     }
 
@@ -85,14 +104,37 @@ public class Model {
         users.put(login, new User(login, password));
 
         try {
-            FileWriter writer = new FileWriter(getClass().getResource("/users.csv").getPath(), true);
+            Class.forName("org.postgresql.Driver");
 
-            writer.append('\n');
-            writer.append(login + "," + password);
+            con = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
 
-            writer.close();
-        } catch (IOException e) {
-            LogManager.getRootLogger().error("error while writing user data to file", e);
+            createStatement = con.prepareStatement(
+                    "CREATE TABLE IF NOT EXISTS users (" +
+                    "id serial PRIMARY KEY, " +
+                    "login VARCHAR (50) UNIQUE NOT NULL, " +
+                    "password INT NOT NULL " +
+                    ");"
+            );
+
+            insertStatement = con.prepareStatement(
+                    "INSERT into users (id, login, password) " +
+                            "VALUES (DEFAULT, ?, ?);"
+            );
+            insertStatement.setString(1, users.get(login).getName());
+            insertStatement.setInt(2, users.get(login).getEncodedPass());
+
+            createStatement.executeUpdate();
+            insertStatement.executeUpdate();
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+                createStatement.close();
+                insertStatement.close();
+            } catch (SQLException e) {
+
+            }
         }
     }
 
@@ -120,7 +162,7 @@ public class Model {
     }
 
     public boolean isUserValid(User user) {
-        return users.get(user.getName()).getPass() == user.getPass();
+        return users.get(user.getName()).getEncodedPass() == user.getEncodedPass();
     }
 
     public Map<String, User> getUsers() {

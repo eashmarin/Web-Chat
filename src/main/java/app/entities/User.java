@@ -12,11 +12,16 @@ public class User {
         this.encodedPass = password.hashCode();
     }
 
+    public User(String name, Integer encodedPassword) {
+        this.name = name;
+        this.encodedPass = encodedPassword;
+    }
+
     public String getName() {
         return name;
     }
 
-    public int getPass() {
+    public int getEncodedPass() {
         return encodedPass;
     }
 
