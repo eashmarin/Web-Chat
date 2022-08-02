@@ -5,17 +5,12 @@ import app.entities.Message;
 import app.exceptions.NoMessagesException;
 import app.model.Model;
 
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import org.apache.logging.log4j.LogManager;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-
 
 public class ChatServlet extends HttpServlet {
     @Override

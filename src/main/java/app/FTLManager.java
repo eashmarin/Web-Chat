@@ -11,11 +11,11 @@ import java.io.Writer;
 import java.util.HashMap;
 
 public class FTLManager {
-    private static FTLManager instance = new FTLManager();
+    private static final FTLManager instance = new FTLManager();
 
     private Configuration config;
 
-    private HashMap<String, Object> root;
+    private final HashMap<String, Object> root;
 
     public static FTLManager getInstance() {
         return instance;

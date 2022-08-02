@@ -92,7 +92,7 @@ public class Model {
 
     public List<Message> getRecentMessages() throws NoMessagesException {
         if (messages.isEmpty())
-            throw new NoMessagesException("");
+            throw new NoMessagesException();
 
         int size = messages.size();
 
@@ -104,7 +104,7 @@ public class Model {
 
     public Message lastMessage() throws NoMessagesException {
         if (messages.size() == 0)
-            throw new NoMessagesException("");
+            throw new NoMessagesException();
         return messages.get(messages.size() - 1);
     }
 

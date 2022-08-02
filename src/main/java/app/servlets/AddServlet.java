@@ -5,8 +5,7 @@ import app.JSONParser;
 import app.entities.User;
 import app.exceptions.InvalidInputDataException;
 import app.model.Model;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,7 +15,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
 
 public class AddServlet extends HttpServlet {
     @Override

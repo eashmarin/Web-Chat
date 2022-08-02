@@ -27,7 +27,7 @@ public class User {
 
     public Message getLastSeenMsg() throws NoMessagesException {
         if (lastSeenMsg == null)
-            throw new NoMessagesException("");
+            throw new NoMessagesException();
 
         return lastSeenMsg;
     }
