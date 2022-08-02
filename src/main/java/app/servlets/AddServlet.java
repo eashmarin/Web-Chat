@@ -1,5 +1,6 @@
 package app.servlets;
 
+import app.FTLManager;
 import app.JSONParser;
 import app.entities.User;
 import app.exceptions.InvalidInputDataException;
@@ -47,19 +48,12 @@ public class AddServlet extends HttpServlet {
 
             resp.setStatus(401);
 
-            HashMap<String, Object> root = new HashMap<>();
-
-            Template tmp = model.getFTLConfig().getTemplate("error_input.ftl");
-
             String error_msg = "data is invalid";
 
-            root.put("error_msg", error_msg);
+            FTLManager ftlManager = FTLManager.getInstance();
 
-            try {
-                tmp.process(root, resp.getWriter());
-            } catch (TemplateException ex) {
-                ex.printStackTrace();
-            }
+            ftlManager.putParameter("error_msg", error_msg);
+            ftlManager.executeTemplate("error_input.ftl", resp.getWriter());
 
             logger.warn("failed to log in as '" + user + "': " + error_msg);
         }

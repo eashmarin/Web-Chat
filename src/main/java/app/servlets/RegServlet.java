@@ -1,5 +1,6 @@
 package app.servlets;
 
+import app.FTLManager;
 import app.JSONParser;
 import app.exceptions.*;
 import app.model.Model;
@@ -46,10 +47,6 @@ public class RegServlet extends HttpServlet {
 
             resp.setStatus(401);
 
-            HashMap<String, Object> root = new HashMap<>();
-
-            Template tmp = model.getFTLConfig().getTemplate("error_input.ftl");
-
             String error_msg = e.getLocalizedMessage();
 
             if (e instanceof PasswordsDoNotMatchException)
@@ -64,13 +61,10 @@ public class RegServlet extends HttpServlet {
             if (e instanceof ShortPasswordException)
                 error_msg = "password must consist at least 8 symbols";
 
-            root.put("error_msg", error_msg);
+            FTLManager ftlManager = FTLManager.getInstance();
 
-            try {
-                tmp.process(root, resp.getWriter());
-            } catch (TemplateException ex) {
-                ex.printStackTrace();
-            }
+            ftlManager.putParameter("error_msg", error_msg);
+            ftlManager.executeTemplate("error_input.ftl", resp.getWriter());
 
             logger.warn("failed to sign up as \"" + login + "\": " + error_msg);
         }

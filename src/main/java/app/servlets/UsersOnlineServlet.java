@@ -1,5 +1,6 @@
 package app.servlets;
 
+import app.FTLManager;
 import app.model.Model;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -17,19 +18,10 @@ public class UsersOnlineServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Model model = Model.getInstance();
 
-        Template template = model.getFTLConfig().getTemplate("users_online.ftl");
+        FTLManager ftlManager = FTLManager.getInstance();
 
-        Map<String, Object> root = new HashMap<>();
-
-        root.put("users_online", model.getUsersOnline());
-
-        Writer out = resp.getWriter();
-
-        try {
-            template.process(root, out);
-        } catch (TemplateException e) {
-            e.printStackTrace();
-        }
+        ftlManager.putParameter("users_online", model.getUsersOnline());
+        ftlManager.executeTemplate("users_online.ftl", resp.getWriter());
     }
 
     @Override
@@ -40,18 +32,9 @@ public class UsersOnlineServlet extends HttpServlet {
 
         model.makeOffline(username);
 
-        Map<String, Object> root = new HashMap<>();
+        FTLManager ftlManager = FTLManager.getInstance();
 
-        root.put("users_online", model.getUsersOnline());
-
-        Writer out = resp.getWriter();
-
-        Template template = model.getFTLConfig().getTemplate("users_online.ftl");
-
-        try {
-            template.process(root, out);
-        } catch (TemplateException e) {
-            e.printStackTrace();
-        }
+        ftlManager.putParameter("users_online", model.getUsersOnline());
+        ftlManager.executeTemplate("users_online.ftl", resp.getWriter());
     }
 }

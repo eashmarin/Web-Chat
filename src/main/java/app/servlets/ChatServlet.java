@@ -1,5 +1,6 @@
 package app.servlets;
 
+import app.FTLManager;
 import app.entities.Message;
 import app.exceptions.NoMessagesException;
 import app.model.Model;
@@ -29,25 +30,17 @@ public class ChatServlet extends HttpServlet {
             return;
         }
 
-        Template temp = model.getFTLConfig().getTemplate("/chat.ftl");
-
-        Map<String, Object> root = new HashMap<>();
+        FTLManager ftlManager = FTLManager.getInstance();
 
         try {
-            root.put("msgs", model.getRecentMessages());
+            ftlManager.putParameter("msgs", model.getRecentMessages());
 
             model.getUsers().get(author).setLastSeenMsg(model.lastMessage());
         } catch (NoMessagesException e) {
             LogManager.getRootLogger().info("no messages had been before user '" + author + "' enter the chat");
         }
 
-        Writer out = resp.getWriter();
-
-        try {
-            temp.process(root, out);
-        } catch (TemplateException e) {
-            e.printStackTrace();
-        }
+        ftlManager.executeTemplate("chat.ftl", resp.getWriter());
     }
 
     @Override
@@ -64,25 +57,13 @@ public class ChatServlet extends HttpServlet {
 
         Message message = new Message(author, msgText);
 
-        Map<String, Object> root = new HashMap<>();
-
         model.addMessage(message);
-
         model.getUsers().get(author).setLastSeenMsg(message);
 
-        root.put("own_msg", message);
+        FTLManager ftlManager = FTLManager.getInstance();
 
-        Template temp = model.getFTLConfig().getTemplate("/message.ftl");
-
-        Writer out = resp.getWriter();
-
-        try {
-            temp.process(root, out);
-        } catch (TemplateException e) {
-            e.printStackTrace();
-        }
-
-        out.flush();
+        ftlManager.putParameter("own_msg", message);
+        ftlManager.executeTemplate("message.ftl", resp.getWriter());
     }
 
     @Override
@@ -96,22 +77,15 @@ public class ChatServlet extends HttpServlet {
 
             if (lastSeenMsg != model.lastMessage()) {
 
-                Template temp = model.getFTLConfig().getTemplate("/message.ftl");
+                FTLManager ftlManager = FTLManager.getInstance();
 
-                Map<String, Object> root = new HashMap<>();
-
-                Writer out = resp.getWriter();
-
-                root.put("msgs", model.getMessagesStartingFromNextTo(lastSeenMsg));
-
-                temp.process(root, out);
+                ftlManager.putParameter("msgs", model.getMessagesStartingFromNextTo(lastSeenMsg));
+                ftlManager.executeTemplate("message.ftl", resp.getWriter());
 
                 model.getUsers().get(author).setLastSeenMsg(model.lastMessage());
             }
         } catch (NoMessagesException e) {
             //LogManager.getRootLogger().info("no messages to update for user \'" + author + "\'");
-        } catch (TemplateException e) {
-            e.printStackTrace();
         }
     }
 }

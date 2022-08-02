@@ -2,10 +2,7 @@ package app.model;
 
 import app.entities.*;
 import app.exceptions.*;
-import freemarker.template.Configuration;
-import freemarker.template.TemplateExceptionHandler;
 import org.apache.logging.log4j.LogManager;
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +10,6 @@ import java.util.Map;
 public class Model {
     private static final Model instance = new Model();
 
-    private Configuration ftlConfig;
     private final Map<String, User> users;
     private final List<Message> messages;
     private final List<User> usersOnline;
@@ -28,29 +24,9 @@ public class Model {
         messages = new ArrayList<>();
         usersOnline = new ArrayList<>();
 
-        initFTLConfig();
-
         users = db.getUsers();
 
         LogManager.getRootLogger().debug("users: " + users.keySet());
-    }
-
-    private void initFTLConfig() {
-        ftlConfig = new Configuration(Configuration.VERSION_2_3_31);
-        try {
-            ftlConfig.setDirectoryForTemplateLoading(new File(getClass().getResource("/templates").getPath()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        ftlConfig.setDefaultEncoding("UTF-8");
-        ftlConfig.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-        ftlConfig.setLogTemplateExceptions(false);
-        ftlConfig.setWrapUncheckedExceptions(true);
-        ftlConfig.setFallbackOnNullLoopVariable(false);
-    }
-
-    public Configuration getFTLConfig() {
-        return ftlConfig;
     }
 
     public void addNewUser(String login, String password, String rePassword) throws UserExistsException, PasswordsDoNotMatchException, ShortPasswordException, ShortLoginException {
