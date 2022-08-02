@@ -7,9 +7,9 @@ public class Message {
     private final String text;
     private final Date date;
 
-    public Message(String username, String msg) {
-        this.author = username;
-        this.text = msg;
+    public Message(String author, String text) {
+        this.author = author;
+        this.text = text;
         date = new Date();
     }
 

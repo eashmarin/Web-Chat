@@ -3,8 +3,6 @@ package app.servlets;
 import app.model.Model;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +17,7 @@ public class UsersOnlineServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Model model = Model.getInstance();
 
-        Template template = model.getConfiguration().getTemplate("users_online.ftl");
+        Template template = model.getFTLConfig().getTemplate("users_online.ftl");
 
         Map<String, Object> root = new HashMap<>();
 
@@ -38,9 +36,9 @@ public class UsersOnlineServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Model model = Model.getInstance();
 
-        String user = (String) req.getSession().getAttribute("login");
+        String username = (String) req.getSession().getAttribute("login");
 
-        model.makeOffline(user);
+        model.makeOffline(username);
 
         Map<String, Object> root = new HashMap<>();
 
@@ -48,7 +46,7 @@ public class UsersOnlineServlet extends HttpServlet {
 
         Writer out = resp.getWriter();
 
-        Template template = model.getConfiguration().getTemplate("users_online.ftl");
+        Template template = model.getFTLConfig().getTemplate("users_online.ftl");
 
         try {
             template.process(root, out);

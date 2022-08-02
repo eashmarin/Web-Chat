@@ -29,7 +29,7 @@ public class ChatServlet extends HttpServlet {
             return;
         }
 
-        Template temp = model.getConfiguration().getTemplate("/chat.ftl");
+        Template temp = model.getFTLConfig().getTemplate("/chat.ftl");
 
         Map<String, Object> root = new HashMap<>();
 
@@ -38,7 +38,7 @@ public class ChatServlet extends HttpServlet {
 
             model.getUsers().get(author).setLastSeenMsg(model.lastMessage());
         } catch (NoMessagesException e) {
-            LogManager.getRootLogger().info("no messages had been before user \'" + author + "\' enter the chat");
+            LogManager.getRootLogger().info("no messages had been before user '" + author + "' enter the chat");
         }
 
         Writer out = resp.getWriter();
@@ -57,7 +57,7 @@ public class ChatServlet extends HttpServlet {
         String author = (String) req.getSession().getAttribute("login");
         String msgText = req.getReader().readLine();
 
-        if (msgText == null || !msgText.matches(".*[a-zA-Z0-9!@#$%^&*(){}_=\\-+?/:\\[\\]\\'\"].*")) {
+        if (msgText == null || !msgText.matches(".*[a-zA-Z0-9!@#$%^&*(){}_=\\-+?/:\\[\\]'\"].*")) {
             resp.setStatus(204);
             return;
         }
@@ -72,7 +72,7 @@ public class ChatServlet extends HttpServlet {
 
         root.put("own_msg", message);
 
-        Template temp = model.getConfiguration().getTemplate("/message.ftl");
+        Template temp = model.getFTLConfig().getTemplate("/message.ftl");
 
         Writer out = resp.getWriter();
 
@@ -96,13 +96,13 @@ public class ChatServlet extends HttpServlet {
 
             if (lastSeenMsg != model.lastMessage()) {
 
-                Template temp = model.getConfiguration().getTemplate("/message.ftl");
+                Template temp = model.getFTLConfig().getTemplate("/message.ftl");
 
                 Map<String, Object> root = new HashMap<>();
 
                 Writer out = resp.getWriter();
 
-                root.put("msgs", model.getMessagesAfter(lastSeenMsg));
+                root.put("msgs", model.getMessagesStartingFromNextTo(lastSeenMsg));
 
                 temp.process(root, out);
 

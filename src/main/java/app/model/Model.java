@@ -1,7 +1,6 @@
 package app.model;
 
-import app.entities.Message;
-import app.entities.User;
+import app.entities.*;
 import app.exceptions.*;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
@@ -14,12 +13,12 @@ import java.util.Map;
 public class Model {
     private static final Model instance = new Model();
 
-    Configuration cfg;
+    private Configuration ftlConfig;
     private final Map<String, User> users;
     private final List<Message> messages;
     private final List<User> usersOnline;
 
-    private DataBase db = DataBase.getInstance();
+    private final DataBase db = DataBase.getInstance();
 
     public static Model getInstance() {
         return instance;
@@ -29,36 +28,40 @@ public class Model {
         messages = new ArrayList<>();
         usersOnline = new ArrayList<>();
 
-        cfg = new Configuration(Configuration.VERSION_2_3_31);
-        try {
-            cfg.setDirectoryForTemplateLoading(new File(getClass().getResource("/templates").getPath()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        cfg.setDefaultEncoding("UTF-8");
-        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-        cfg.setLogTemplateExceptions(false);
-        cfg.setWrapUncheckedExceptions(true);
-        cfg.setFallbackOnNullLoopVariable(false);
+        initFTLConfig();
 
         users = db.getUsers();
 
         LogManager.getRootLogger().debug("users: " + users.keySet());
     }
 
-    public Configuration getConfiguration() {
-        return cfg;
+    private void initFTLConfig() {
+        ftlConfig = new Configuration(Configuration.VERSION_2_3_31);
+        try {
+            ftlConfig.setDirectoryForTemplateLoading(new File(getClass().getResource("/templates").getPath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ftlConfig.setDefaultEncoding("UTF-8");
+        ftlConfig.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+        ftlConfig.setLogTemplateExceptions(false);
+        ftlConfig.setWrapUncheckedExceptions(true);
+        ftlConfig.setFallbackOnNullLoopVariable(false);
     }
 
-    public void addNewUser(String login, String password, String rePassword) throws UserExistsException, PasswordsDoNotMatchException, SmallPasswordException, ShortLoginException {
+    public Configuration getFTLConfig() {
+        return ftlConfig;
+    }
+
+    public void addNewUser(String login, String password, String rePassword) throws UserExistsException, PasswordsDoNotMatchException, ShortPasswordException, ShortLoginException {
         if (login.length() < 3)
             throw new ShortLoginException(Integer.toString(login.length()));
 
         if (password.length() < 8)
-            throw new SmallPasswordException(Integer.toString(password.length()));
+            throw new ShortPasswordException(Integer.toString(password.length()));
 
         if (!password.equals(rePassword))
-            throw new PasswordsDoNotMatchException("");
+            throw new PasswordsDoNotMatchException();
 
         if (users.containsKey(login))
             throw new UserExistsException(login);
@@ -77,11 +80,11 @@ public class Model {
         if (!contains) {
             usersOnline.add(user);
 
-            LogManager.getRootLogger().info("user \'" + user + "\' became online");
+            LogManager.getRootLogger().info("user '" + user + "' became online");
         }
     }
 
-    public void logIn(User user) throws InvalidInputDataException {
+    public void authorizeUser(User user) throws InvalidInputDataException {
         if (getUsers().containsKey(user.getName()) && isUserValid(user))
             makeOnline(user);
         else
@@ -93,7 +96,7 @@ public class Model {
         messages.add(message);
     }
 
-    public boolean isUserValid(User user) {
+    private boolean isUserValid(User user) {
         return users.get(user.getName()).getEncodedPass() == user.getEncodedPass();
     }
 
@@ -101,21 +104,17 @@ public class Model {
         return users;
     }
 
-    public List<Message> getMessages() { return messages; }
-
-    public List<Message> getMessagesAfter(Message message) {
-
+    public List<Message> getMessagesStartingFromNextTo(Message message) {
         if (message == null)
-            return getMessages();                           // TODO: change the way
+            return messages;
 
-        int fromIndex = getMessages().indexOf(message) + 1;
-        int toIndex = getMessages().size();
+        int fromIndex = messages.indexOf(message) + 1;
+        int toIndex = messages.size();
 
-        return getMessages().subList(fromIndex, toIndex);
+        return messages.subList(fromIndex, toIndex);
     }
 
     public List<Message> getRecentMessages() throws NoMessagesException {
-
         if (messages.isEmpty())
             throw new NoMessagesException("");
 
@@ -145,6 +144,6 @@ public class Model {
 
         usersOnline.remove(user);
 
-        LogManager.getRootLogger().info("user \'" + username + "\' became offline");
+        LogManager.getRootLogger().info("user '" + username + "' became offline");
     }
 }

@@ -38,7 +38,7 @@ public class RegServlet extends HttpServlet {
         try {
             model.addNewUser(login, pass, rePass);
 
-            logger.info("user \'" + login + "\' is saved to file");
+            logger.info("user '" + login + "' is saved to file");
 
             resp.getWriter().print("0");
 
@@ -48,7 +48,7 @@ public class RegServlet extends HttpServlet {
 
             HashMap<String, Object> root = new HashMap<>();
 
-            Template tmp = model.getConfiguration().getTemplate("error_input.ftl");
+            Template tmp = model.getFTLConfig().getTemplate("error_input.ftl");
 
             String error_msg = e.getLocalizedMessage();
 
@@ -61,7 +61,7 @@ public class RegServlet extends HttpServlet {
             if (e instanceof ShortLoginException)
                 error_msg = "login must consist at least 3 symbols";
 
-            if (e instanceof SmallPasswordException)
+            if (e instanceof ShortPasswordException)
                 error_msg = "password must consist at least 8 symbols";
 
             root.put("error_msg", error_msg);

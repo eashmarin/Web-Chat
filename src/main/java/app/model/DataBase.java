@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Properties;
 
 public class DataBase {
-    private static DataBase instance = new DataBase();
+    private static final DataBase instance = new DataBase();
 
     private static String dbUrl;
     private static String dbUser;

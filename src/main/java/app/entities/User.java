@@ -3,8 +3,8 @@ package app.entities;
 import app.exceptions.NoMessagesException;
 
 public class User {
-    private String name;
-    private int encodedPass;
+    private final String name;
+    private final int encodedPass;
     private Message lastSeenMsg;
 
     public User(String name, String password) {

@@ -37,9 +37,9 @@ public class AddServlet extends HttpServlet {
         User user = new User(login, pass);
 
         try {
-            model.logIn(user);
+            model.authorizeUser(user);
 
-            logger.info("user \'" + user + "\' logged in");
+            logger.info("user '" + user + "' logged in");
 
             req.getSession().setAttribute("login", login);
 
@@ -49,7 +49,7 @@ public class AddServlet extends HttpServlet {
 
             HashMap<String, Object> root = new HashMap<>();
 
-            Template tmp = model.getConfiguration().getTemplate("error_input.ftl");
+            Template tmp = model.getFTLConfig().getTemplate("error_input.ftl");
 
             String error_msg = "data is invalid";
 
@@ -61,7 +61,7 @@ public class AddServlet extends HttpServlet {
                 ex.printStackTrace();
             }
 
-            logger.warn("failed to log in as \'" + user + "\': " + error_msg);
+            logger.warn("failed to log in as '" + user + "': " + error_msg);
         }
     }
 }
